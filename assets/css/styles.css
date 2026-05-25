@@ -1,0 +1,176 @@
+/* ================= VARIABLES Y CONFIGURACIÓN BASE ================= */
+:root {
+    --bg-color: #1e1e24;
+    --card-color: #2a2a35;
+    --accent-color: #ff4757;
+    --accent-hover: #e84118;
+    --text-color: #f5f6fa;
+    --board-light: #eeeed2;
+    --board-dark: #769656;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.game-container {
+    width: 100%;
+    max-width: 1000px;
+    padding: 20px;
+}
+
+/* ================= COMPONENTES GENÉRICOS ================= */
+.screen {
+    background-color: var(--card-color);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+}
+
+.hidden {
+    display: none !important;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: var(--text-color);
+    letter-spacing: 2px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #88889b;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+select {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--bg-color);
+    border: 2px solid #444454;
+    border-radius: 6px;
+    color: white;
+    font-size: 16px;
+    outline: none;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn:hover { background-color: var(--accent-hover); }
+.btn-secondary { background-color: #4a4a5a; }
+.btn-secondary:hover { background-color: #5a5a6a; }
+.btn-danger { background-color: #3a3a45; border: 1px solid #ff4757; color: #ff4757; }
+.btn-danger:hover { background-color: #ff4757; color: white; }
+
+/* ================= DISEÑO DE LA ZONA DE JUEGO ================= */
+.game-layout {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 40px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.control-panel {
+    flex: 1;
+    min-width: 250px;
+    background-color: var(--bg-color);
+    padding: 20px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.status-box {
+    background-color: var(--card-color);
+    padding: 15px;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* ================= EL TABLERO DE AJEDREZ ================= */
+.board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    width: 90vw;
+    height: 90vw;
+    max-width: 520px;
+    max-height: 520px;
+    border: 4px solid #111;
+    border-radius: 4px;
+    box-shadow: 0 12px 36px rgba(0,0,0,0.5);
+}
+
+/* Celdas del tablero */
+.square {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: calc(520px / 12); /* Tamaño dinámico para las piezas Unicode */
+    cursor: pointer;
+    user-select: none;
+}
+
+@media (max-width: 600px) {
+    .square { font-size: 10vw; }
+}
+
+.light { background-color: var(--board-light); }
+.dark { background-color: var(--board-dark); }
+
+/* Efectos visuales de selección y movimientos */
+.selected {
+    background-color: #baca44 !important;
+}
+
+.hint {
+    background-color: rgba(247, 171, 8, 0.5) !important;
+    box-shadow: inset 0 0 0 4px rgba(247, 171, 8, 0.8);
+}

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROYECTO-AJEDREZ-Z</title>
+    <!-- Vinculamos los estilos -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+    <div class="game-container">
+        <!-- ================= PANTALLA 1: MENÚ DE CONFIGURACIÓN ================= -->
+        <div id="menu-screen" class="screen">
+            <h1>PROYECTO-AJEDREZ-Z</h1>
+            <p class="subtitle">Configura tu batalla</p>
+
+            <div class="form-group">
+                <label for="game-mode">Modo de Juego:</label>
+                <select id="game-mode">
+                    <option value="pvp">Jugador vs Jugador (Local)</option>
+                    <option value="bot">Jugador vs IA (Bot)</option>
+                </select>
+            </div>
+
+            <div id="bot-difficulty-group" class="form-group hidden">
+                <label for="bot-difficulty">Dificultad del Bot:</label>
+                <select id="bot-difficulty">
+                    <option value="easy">Fácil (Aleatorio)</option>
+                    <option value="medium">Normal (Codicioso)</option>
+                    <option value="hard">Difícil (Minimax)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="player-color">Jugar con piezas:</label>
+                <select id="player-color">
+                    <option value="white">Blancas</option>
+                    <option value="black">Negras</option>
+                </select>
+            </div>
+
+            <button id="btn-start" class="btn">Iniciar Partida</button>
+        </div>
+
+        <!-- ================= PANTALLA 2: ZONA DE JUEGO ================= -->
+        <div id="game-screen" class="screen hidden">
+            <div class="game-layout">
+                
+                <!-- Panel de Control Lateral -->
+                <div class="control-panel">
+                    <h2>Partida Activa</h2>
+                    <div class="status-box">
+                        <p>Turno de: <span id="current-turn">Blancas</span></p>
+                    </div>
+                    <div class="actions">
+                        <button id="btn-undo" class="btn btn-secondary">↩ Regresar Movimiento</button>
+                        <button id="btn-restart" class="btn btn-danger">🏳 Abandonar</button>
+                    </div>
+                </div>
+
+                <!-- El Tablero de Ajedrez -->
+                <div id="chess-board" class="board"></div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Vinculamos los scripts en orden de dependencia -->
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/logic.js"></script>
+    <script src="assets/js/bot.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>
