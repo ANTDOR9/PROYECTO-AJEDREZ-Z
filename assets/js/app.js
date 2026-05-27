@@ -1,47 +1,54 @@
 // ==========================================
-// CONTROLADOR PRINCIPAL DEL PROYECTO
+// CONTROLADOR PRINCIPAL
 // ==========================================
 
-document.addEventListener("DOMContentLoaded", () => {
-    const btnIniciar    = document.getElementById("btn-start");
-    const btnAbandonar  = document.getElementById("btn-restart");
-    const btnDeshacer   = document.getElementById("btn-undo");
-    const pantallaMenu  = document.getElementById("menu-screen");
-    const pantallaJuego = document.getElementById("game-screen");
+document.addEventListener('DOMContentLoaded', () => {
+    const btnIniciar   = document.getElementById('btn-start');
+    const btnAbandonar = document.getElementById('btn-restart');
+    const btnDeshacer  = document.getElementById('btn-undo');
+    const btnMute      = document.getElementById('btn-mute');
+    const pantallaMenu = document.getElementById('menu-screen');
+    const pantallaJuego= document.getElementById('game-screen');
 
-    // ── INICIAR PARTIDA ──────────────────────────────────────
-    btnIniciar.addEventListener("click", () => {
+    // Música de menú al cargar
+    if (typeof Audio !== 'undefined') Audio.playMenu();
+
+    // ── INICIAR ───────────────────────────────────────────────
+    btnIniciar.addEventListener('click', () => {
         ConfigJuego.partidaActiva = true;
-
-        pantallaMenu.classList.add("hidden");
-        pantallaJuego.classList.remove("hidden");
-
+        pantallaMenu.classList.add('hidden');
+        pantallaJuego.classList.remove('hidden');
         UI.inicializar();
+        if (typeof Audio !== 'undefined') Audio.playGame();
     });
 
-    // ── ABANDONAR / VOLVER AL MENÚ ───────────────────────────
-    btnAbandonar.addEventListener("click", () => {
-        if (confirm("¿Seguro que deseas abandonar la partida actual?")) {
-            ConfigJuego.partidaActiva = false;
-
-            pantallaJuego.classList.add("hidden");
-            pantallaMenu.classList.remove("hidden");
-
-            const tablero = document.getElementById("chess-board");
-            if (tablero) tablero.innerHTML = "";
-        }
+    // ── ABANDONAR ─────────────────────────────────────────────
+    btnAbandonar.addEventListener('click', () => {
+        if (!confirm('¿Seguro que deseas abandonar la partida?')) return;
+        ConfigJuego.partidaActiva = false;
+        pantallaJuego.classList.add('hidden');
+        pantallaMenu.classList.remove('hidden');
+        document.getElementById('chess-board').innerHTML = '';
+        if (typeof Audio !== 'undefined') Audio.playMenu();
     });
 
-    // ── DESHACER MOVIMIENTO ───────────────────────────────────
-    btnDeshacer.addEventListener("click", () => {
+    // ── DESHACER ──────────────────────────────────────────────
+    btnDeshacer.addEventListener('click', () => {
         if (!ConfigJuego.partidaActiva) return;
-
-        const exito = Logic.deshacerMovimiento();
-        if (exito) {
+        if (Logic.deshacerMovimiento()) {
             UI.casillaSeleccionada = null;
-            UI.movimientosValidos = [];
+            UI.movimientosValidos  = [];
             UI.dibujarTablero();
             UI.actualizarTurno();
         }
     });
+
+    // ── MUTE ──────────────────────────────────────────────────
+    if (btnMute) {
+        btnMute.addEventListener('click', () => {
+            if (typeof Audio === 'undefined') return;
+            const muteado = Audio.toggleMute();
+            btnMute.textContent = muteado ? '🔇 Sonido' : '🔊 Sonido';
+        });
+    }
 });

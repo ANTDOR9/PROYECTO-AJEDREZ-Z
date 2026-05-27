@@ -8,12 +8,11 @@
 </head>
 <body>
 
-    <!-- Pétalos de fondo generados por JS -->
     <div id="petals-container"></div>
 
     <div class="game-container">
 
-        <!-- ===== PANTALLA 1: MENÚ ===== -->
+        <!-- ===== MENÚ ===== -->
         <div id="menu-screen" class="screen">
             <h1>棋 AJEDREZ-Z</h1>
             <p class="subtitle">· configura tu batalla ·</p>
@@ -44,13 +43,13 @@
             </div>
 
             <button id="btn-start" class="btn">Iniciar Partida</button>
+            <button id="btn-mute" class="btn btn-secondary" style="margin-top:10px">🔊 Sonido</button>
         </div>
 
-        <!-- ===== PANTALLA 2: JUEGO ===== -->
+        <!-- ===== JUEGO ===== -->
         <div id="game-screen" class="screen hidden">
             <div class="game-layout">
 
-                <!-- Panel lateral -->
                 <div class="control-panel">
                     <h2>棋 Partida</h2>
                     <div class="status-box">
@@ -64,7 +63,6 @@
                     <div class="panel-deco">❀ ❀ ❀</div>
                 </div>
 
-                <!-- Tablero -->
                 <div class="board-wrapper">
                     <div id="chess-board" class="board"></div>
                 </div>
@@ -77,23 +75,22 @@
     <script src="assets/js/config.js"></script>
     <script src="assets/js/logic.js"></script>
     <script src="assets/js/bot.js"></script>
+    <script src="assets/js/audio.js"></script>
     <script src="assets/js/ui.js"></script>
     <script src="assets/js/app.js"></script>
 
-    <!-- Pétalos de fondo -->
     <script>
-        const container = document.getElementById('petals-container');
-        const petalSymbols = ['🌸', '✿', '❀', '꩜', '✦'];
+        // Pétalos de fondo
+        const pc = document.getElementById('petals-container');
         for (let i = 0; i < 18; i++) {
             const p = document.createElement('div');
             p.classList.add('petal');
-            p.textContent = petalSymbols[Math.floor(Math.random() * petalSymbols.length)];
-            p.style.left     = Math.random() * 100 + 'vw';
-            p.style.fontSize = (10 + Math.random() * 12) + 'px';
-            p.style.animationDuration  = (12 + Math.random() * 20) + 's';
-            p.style.animationDelay     = -(Math.random() * 20) + 's';
-            p.style.opacity = 0;
-            container.appendChild(p);
+            p.textContent = ['🌸','✿','❀','✦','꩜'][Math.floor(Math.random()*5)];
+            p.style.left = Math.random()*100 + 'vw';
+            p.style.fontSize = (10+Math.random()*12) + 'px';
+            p.style.animationDuration = (12+Math.random()*20) + 's';
+            p.style.animationDelay = -(Math.random()*20) + 's';
+            pc.appendChild(p);
         }
     </script>
 </body>
