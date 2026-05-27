@@ -63,13 +63,14 @@
                     <div class="panel-deco">❀ ❀ ❀</div>
                 </div>
 
+                <!-- Tablero con borde superior visible -->
                 <div class="board-wrapper">
+                    <div class="board-top-bar">❀ &nbsp; ✦ &nbsp; ❀</div>
                     <div id="chess-board" class="board"></div>
                 </div>
 
             </div>
         </div>
-
     </div>
 
     <script src="assets/js/config.js"></script>
@@ -85,7 +86,7 @@
         for (let i = 0; i < 18; i++) {
             const p = document.createElement('div');
             p.classList.add('petal');
-            p.textContent = ['🌸','✿','❀','✦','꩜'][Math.floor(Math.random()*5)];
+            p.textContent = ['🌸','✿','❀','✦'][Math.floor(Math.random()*4)];
             p.style.left = Math.random()*100 + 'vw';
             p.style.fontSize = (10+Math.random()*12) + 'px';
             p.style.animationDuration = (12+Math.random()*20) + 's';
