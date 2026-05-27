@@ -3,39 +3,45 @@
 // ==========================================
 
 document.addEventListener("DOMContentLoaded", () => {
-    const btnIniciar = document.getElementById("btn-start");
-    const btnAbandonar = document.getElementById("btn-restart");
-    const pantallaMenu = document.getElementById("menu-screen");
+    const btnIniciar    = document.getElementById("btn-start");
+    const btnAbandonar  = document.getElementById("btn-restart");
+    const btnDeshacer   = document.getElementById("btn-undo");
+    const pantallaMenu  = document.getElementById("menu-screen");
     const pantallaJuego = document.getElementById("game-screen");
 
-    // Evento para INICIAR la partida
+    // ── INICIAR PARTIDA ──────────────────────────────────────
     btnIniciar.addEventListener("click", () => {
         ConfigJuego.partidaActiva = true;
 
-        // Transición de pantallas cambiando clases CSS
         pantallaMenu.classList.add("hidden");
         pantallaJuego.classList.remove("hidden");
 
-        console.log("Iniciando partida con la configuración:", ConfigJuego);
-
-        // TODO: Inicializar la lógica del tablero (Fase de UI y Logic)
-        if (typeof UI !== 'undefined' && typeof UI.inicializar === 'function') {
-            UI.inicializar();
-        }
+        UI.inicializar();
     });
 
-    // Evento para ABANDONAR la partida (Regresar al menú)
+    // ── ABANDONAR / VOLVER AL MENÚ ───────────────────────────
     btnAbandonar.addEventListener("click", () => {
         if (confirm("¿Seguro que deseas abandonar la partida actual?")) {
             ConfigJuego.partidaActiva = false;
 
-            // Volver al menú inicial
             pantallaJuego.classList.add("hidden");
             pantallaMenu.classList.remove("hidden");
-            
-            // Limpiar tablero físico
+
             const tablero = document.getElementById("chess-board");
             if (tablero) tablero.innerHTML = "";
+        }
+    });
+
+    // ── DESHACER MOVIMIENTO ───────────────────────────────────
+    btnDeshacer.addEventListener("click", () => {
+        if (!ConfigJuego.partidaActiva) return;
+
+        const exito = Logic.deshacerMovimiento();
+        if (exito) {
+            UI.casillaSeleccionada = null;
+            UI.movimientosValidos = [];
+            UI.dibujarTablero();
+            UI.actualizarTurno();
         }
     });
 });
