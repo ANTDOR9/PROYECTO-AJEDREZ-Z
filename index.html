@@ -4,73 +4,97 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PROYECTO-AJEDREZ-Z</title>
-    <!-- Vinculamos los estilos -->
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
 
+    <!-- Pétalos de fondo generados por JS -->
+    <div id="petals-container"></div>
+
     <div class="game-container">
-        <!-- ================= PANTALLA 1: MENÚ DE CONFIGURACIÓN ================= -->
+
+        <!-- ===== PANTALLA 1: MENÚ ===== -->
         <div id="menu-screen" class="screen">
-            <h1>PROYECTO-AJEDREZ-Z</h1>
-            <p class="subtitle">Configura tu batalla</p>
+            <h1>棋 AJEDREZ-Z</h1>
+            <p class="subtitle">· configura tu batalla ·</p>
 
             <div class="form-group">
-                <label for="game-mode">Modo de Juego:</label>
+                <label for="game-mode">Modo de Juego</label>
                 <select id="game-mode">
-                    <option value="pvp">Jugador vs Jugador (Local)</option>
-                    <option value="bot">Jugador vs IA (Bot)</option>
+                    <option value="pvp">Jugador vs Jugador</option>
+                    <option value="bot">Jugador vs IA</option>
                 </select>
             </div>
 
             <div id="bot-difficulty-group" class="form-group hidden">
-                <label for="bot-difficulty">Dificultad del Bot:</label>
+                <label for="bot-difficulty">Dificultad</label>
                 <select id="bot-difficulty">
-                    <option value="easy">Fácil (Aleatorio)</option>
-                    <option value="medium">Normal (Codicioso)</option>
-                    <option value="hard">Difícil (Minimax)</option>
+                    <option value="easy">Fácil — Aleatorio</option>
+                    <option value="medium">Normal — Codicioso</option>
+                    <option value="hard">Difícil — Minimax</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="player-color">Jugar con piezas:</label>
+                <label for="player-color">Jugar como</label>
                 <select id="player-color">
-                    <option value="white">Blancas</option>
-                    <option value="black">Negras</option>
+                    <option value="white">⬜ Blancas</option>
+                    <option value="black">⬛ Negras</option>
                 </select>
             </div>
 
             <button id="btn-start" class="btn">Iniciar Partida</button>
         </div>
 
-        <!-- ================= PANTALLA 2: ZONA DE JUEGO ================= -->
+        <!-- ===== PANTALLA 2: JUEGO ===== -->
         <div id="game-screen" class="screen hidden">
             <div class="game-layout">
-                
-                <!-- Panel de Control Lateral -->
+
+                <!-- Panel lateral -->
                 <div class="control-panel">
-                    <h2>Partida Activa</h2>
+                    <h2>棋 Partida</h2>
                     <div class="status-box">
-                        <p>Turno de: <span id="current-turn">Blancas</span></p>
+                        <small>Turno actual</small>
+                        <span id="current-turn">⬜ Blancas</span>
                     </div>
                     <div class="actions">
-                        <button id="btn-undo" class="btn btn-secondary">↩ Regresar Movimiento</button>
-                        <button id="btn-restart" class="btn btn-danger">🏳 Abandonar</button>
+                        <button id="btn-undo"    class="btn btn-secondary">↩ Deshacer</button>
+                        <button id="btn-restart" class="btn btn-danger">✕ Abandonar</button>
                     </div>
+                    <div class="panel-deco">❀ ❀ ❀</div>
                 </div>
 
-                <!-- El Tablero de Ajedrez -->
-                <div id="chess-board" class="board"></div>
+                <!-- Tablero -->
+                <div class="board-wrapper">
+                    <div id="chess-board" class="board"></div>
+                </div>
 
             </div>
         </div>
+
     </div>
 
-    <!-- Vinculamos los scripts en orden de dependencia -->
     <script src="assets/js/config.js"></script>
     <script src="assets/js/logic.js"></script>
     <script src="assets/js/bot.js"></script>
     <script src="assets/js/ui.js"></script>
     <script src="assets/js/app.js"></script>
+
+    <!-- Pétalos de fondo -->
+    <script>
+        const container = document.getElementById('petals-container');
+        const petalSymbols = ['🌸', '✿', '❀', '꩜', '✦'];
+        for (let i = 0; i < 18; i++) {
+            const p = document.createElement('div');
+            p.classList.add('petal');
+            p.textContent = petalSymbols[Math.floor(Math.random() * petalSymbols.length)];
+            p.style.left     = Math.random() * 100 + 'vw';
+            p.style.fontSize = (10 + Math.random() * 12) + 'px';
+            p.style.animationDuration  = (12 + Math.random() * 20) + 's';
+            p.style.animationDelay     = -(Math.random() * 20) + 's';
+            p.style.opacity = 0;
+            container.appendChild(p);
+        }
+    </script>
 </body>
 </html>
