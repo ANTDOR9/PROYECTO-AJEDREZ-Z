@@ -1,176 +1,260 @@
-/* ================= VARIABLES Y CONFIGURACIÓN BASE ================= */
+/* ================= FUENTES ================= */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Cinzel:wght@400;700&display=swap');
+
+/* ================= VARIABLES ================= */
 :root {
-    --bg-color: #1e1e24;
-    --card-color: #2a2a35;
-    --accent-color: #ff4757;
-    --accent-hover: #e84118;
-    --text-color: #f5f6fa;
-    --board-light: #eeeed2;
-    --board-dark: #769656;
+    --bg:           #0d0608;
+    --bg2:          #150c10;
+    --card:         #1e1018;
+    --card2:        #261520;
+    --peach:        #e8758a;
+    --peach-light:  #ffb3c1;
+    --peach-dark:   #a03550;
+    --gold:         #c9955a;
+    --gold-light:   #e8c090;
+    --text:         #f0dde5;
+    --text-dim:     #8a6070;
+    --board-light-img: rgba(255,180,150,0.07);
+    --board-dark-img:  rgba(80,20,40,0.25);
+    --shadow:       0 8px 40px rgba(0,0,0,0.7);
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
+    background-color: var(--bg);
+    background-image:
+        radial-gradient(ellipse at 15% 20%, rgba(232,117,138,0.07) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 80%, rgba(160,53,80,0.09) 0%, transparent 55%),
+        radial-gradient(ellipse at 50% 50%, rgba(201,149,90,0.04) 0%, transparent 70%);
+    color: var(--text);
+    font-family: 'Cinzel', 'Noto Serif SC', serif;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
+    overflow-x: hidden;
 }
 
-.game-container {
-    width: 100%;
-    max-width: 1000px;
-    padding: 20px;
+/* ================= PÉTALOS DE FONDO ================= */
+.petal {
+    position: fixed;
+    pointer-events: none;
+    opacity: 0;
+    animation: petalFall linear infinite;
+    z-index: 0;
+    font-size: 14px;
+    filter: blur(0.3px);
+}
+@keyframes petalFall {
+    0%   { transform: translateY(-40px) rotate(0deg) translateX(0);   opacity: 0; }
+    10%  { opacity: 0.6; }
+    90%  { opacity: 0.3; }
+    100% { transform: translateY(105vh) rotate(720deg) translateX(60px); opacity: 0; }
 }
 
-/* ================= COMPONENTES GENÉRICOS ================= */
-.screen {
-    background-color: var(--card-color);
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-    transition: all 0.3s ease;
-}
+/* ================= CONTENEDOR ================= */
+.game-container { position: relative; z-index: 1; width: 100%; max-width: 1050px; padding: 20px; }
+.hidden { display: none !important; }
 
-.hidden {
-    display: none !important;
+/* ================= MENÚ ================= */
+#menu-screen {
+    background: linear-gradient(160deg, var(--card) 0%, var(--bg2) 100%);
+    border: 1px solid rgba(232,117,138,0.2);
+    border-radius: 16px;
+    padding: 52px 48px;
+    box-shadow: var(--shadow), 0 0 80px rgba(232,117,138,0.06);
+    max-width: 480px;
+    margin: 0 auto;
+    text-align: center;
+    animation: fadeIn 0.6s ease;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 h1 {
-    text-align: center;
-    margin-bottom: 10px;
-    color: var(--text-color);
-    letter-spacing: 2px;
+    font-family: 'Cinzel', serif;
+    font-size: clamp(20px, 4vw, 28px);
+    color: var(--peach-light);
+    letter-spacing: 3px;
+    margin-bottom: 6px;
+    text-shadow: 0 0 30px rgba(232,117,138,0.4);
 }
-
 .subtitle {
-    text-align: center;
-    color: #88889b;
-    margin-bottom: 30px;
+    font-family: 'Noto Serif SC', serif;
+    color: var(--text-dim);
+    font-size: 13px;
+    letter-spacing: 4px;
+    margin-bottom: 36px;
 }
 
-.form-group {
-    margin-bottom: 20px;
-}
-
+.form-group { margin-bottom: 20px; text-align: left; }
 label {
     display: block;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gold);
     margin-bottom: 8px;
-    font-weight: 600;
+    text-transform: uppercase;
 }
-
 select {
     width: 100%;
-    padding: 12px;
-    background-color: var(--bg-color);
-    border: 2px solid #444454;
-    border-radius: 6px;
-    color: white;
-    font-size: 16px;
+    padding: 12px 16px;
+    background: var(--bg2);
+    border: 1px solid rgba(232,117,138,0.25);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: 'Cinzel', serif;
     outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23e8758a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
 }
+select:focus { border-color: var(--peach); box-shadow: 0 0 0 3px rgba(232,117,138,0.12); }
 
 .btn {
-    display: block;
-    width: 100%;
-    padding: 14px;
-    background-color: var(--accent-color);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s;
+    display: block; width: 100%; padding: 14px;
+    background: linear-gradient(135deg, var(--peach-dark), var(--peach));
+    color: white; border: none; border-radius: 8px;
+    font-size: 12px; font-family: 'Cinzel', serif;
+    letter-spacing: 2px; font-weight: 700; cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 4px 20px rgba(232,117,138,0.3);
+    margin-top: 8px; text-transform: uppercase;
 }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(232,117,138,0.45); filter: brightness(1.1); }
+.btn:active { transform: translateY(0); }
 
-.btn:hover { background-color: var(--accent-hover); }
-.btn-secondary { background-color: #4a4a5a; }
-.btn-secondary:hover { background-color: #5a5a6a; }
-.btn-danger { background-color: #3a3a45; border: 1px solid #ff4757; color: #ff4757; }
-.btn-danger:hover { background-color: #ff4757; color: white; }
+.btn-secondary {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(232,117,138,0.2);
+    color: var(--text-dim); box-shadow: none; font-size: 11px;
+}
+.btn-secondary:hover { background: rgba(232,117,138,0.1); color: var(--peach-light); box-shadow: none; }
 
-/* ================= DISEÑO DE LA ZONA DE JUEGO ================= */
+.btn-danger {
+    background: transparent; border: 1px solid rgba(232,117,138,0.3);
+    color: var(--peach); box-shadow: none; font-size: 11px;
+}
+.btn-danger:hover { background: rgba(232,117,138,0.1); color: var(--peach-light); }
+
+/* ================= PANTALLA DE JUEGO ================= */
+#game-screen { animation: fadeIn 0.5s ease; }
 .game-layout {
-    display: flex;
-    flex-direction: row-reverse;
-    gap: 40px;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
+    display: flex; flex-direction: row;
+    gap: 32px; justify-content: center;
+    align-items: center; flex-wrap: wrap;
 }
 
+/* Panel lateral */
 .control-panel {
-    flex: 1;
-    min-width: 250px;
-    background-color: var(--bg-color);
-    padding: 20px;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    flex: 1; min-width: 200px; max-width: 250px;
+    background: linear-gradient(160deg, var(--card), var(--bg2));
+    border: 1px solid rgba(232,117,138,0.15);
+    border-radius: 14px; padding: 24px 18px;
+    display: flex; flex-direction: column; gap: 14px;
+    box-shadow: var(--shadow);
 }
-
+.control-panel h2 { font-size: 11px; letter-spacing: 3px; color: var(--gold); text-align: center; text-transform: uppercase; }
 .status-box {
-    background-color: var(--card-color);
-    padding: 15px;
-    border-radius: 6px;
-    text-align: center;
-    font-size: 18px;
-    font-weight: bold;
+    background: var(--bg); border: 1px solid rgba(232,117,138,0.2);
+    border-radius: 10px; padding: 14px; text-align: center;
+    font-size: 12px; letter-spacing: 1px; color: var(--peach-light);
+    transition: border-color 0.3s;
 }
+#current-turn { display: block; font-size: 15px; font-weight: 700; margin-top: 4px; color: var(--peach); }
+.actions { display: flex; flex-direction: column; gap: 10px; }
+.panel-deco { text-align: center; font-size: 20px; opacity: 0.12; letter-spacing: 8px; }
 
-.actions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+/* ================= TABLERO ================= */
+.board-wrapper {
+    position: relative; border-radius: 6px;
+    box-shadow: 0 0 60px rgba(232,117,138,0.1), var(--shadow);
 }
-
-/* ================= EL TABLERO DE AJEDREZ ================= */
 .board {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
-    width: 90vw;
-    height: 90vw;
-    max-width: 520px;
-    max-height: 520px;
-    border: 4px solid #111;
-    border-radius: 4px;
-    box-shadow: 0 12px 36px rgba(0,0,0,0.5);
+    width:  min(90vw, 520px);
+    height: min(90vw, 520px);
+    border: 3px solid rgba(201,149,90,0.35);
+    border-radius: 4px; overflow: hidden;
+    background-image: url('../../assets/images/board/board.png');
+    background-size: cover; background-position: center;
+    position: relative;
 }
 
-/* Celdas del tablero */
+/* Casillas */
 .square {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: calc(520px / 12); /* Tamaño dinámico para las piezas Unicode */
-    cursor: pointer;
-    user-select: none;
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer; user-select: none; position: relative;
+    transition: background 0.15s;
+}
+.light { background: rgba(255,180,150,0.06); }
+.dark  { background: rgba(60,10,25,0.22); }
+
+/* Imagen de pieza */
+.square img {
+    width: 82%; height: 82%;
+    object-fit: contain; pointer-events: none;
+    transition: transform 0.18s cubic-bezier(.34,1.56,.64,1), filter 0.18s;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.75));
+    position: relative; z-index: 2;
+}
+.square:hover img { transform: scale(1.1); }
+
+/* Selección */
+.square.selected { background: rgba(232,117,138,0.4) !important; box-shadow: inset 0 0 0 3px rgba(232,117,138,0.8); }
+.square.selected img { transform: scale(1.08); filter: drop-shadow(0 0 14px rgba(232,117,138,0.9)); }
+
+/* Hints */
+.square.hint::after {
+    content: ''; position: absolute;
+    width: 32%; height: 32%; border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,149,90,0.9), rgba(201,149,90,0.25));
+    box-shadow: 0 0 10px rgba(201,149,90,0.5);
+    animation: hintPulse 1.4s ease-in-out infinite;
+    z-index: 3;
+}
+.square.hint.ocupada::after {
+    width: 100%; height: 100%; border-radius: 0; background: none;
+    box-shadow: inset 0 0 0 4px rgba(201,149,90,0.7); animation: hintPulse 1.4s ease-in-out infinite;
+}
+@keyframes hintPulse {
+    0%, 100% { opacity: 0.55; transform: scale(0.85); }
+    50%       { opacity: 1;   transform: scale(1); }
 }
 
-@media (max-width: 600px) {
-    .square { font-size: 10vw; }
+/* ================= PARTÍCULAS ================= */
+.particle {
+    position: fixed; pointer-events: none; z-index: 9999;
+    animation: particleFly 0.85s ease-out forwards;
+}
+@keyframes particleFly {
+    0%   { opacity: 1; transform: translate(0,0) rotate(0deg) scale(1); }
+    100% { opacity: 0; transform: var(--tx) rotate(var(--rot)) scale(0.1); }
 }
 
-.light { background-color: var(--board-light); }
-.dark { background-color: var(--board-dark); }
-
-/* Efectos visuales de selección y movimientos */
-.selected {
-    background-color: #baca44 !important;
+/* Aterrizaje de pieza */
+@keyframes pieceLand {
+    0%   { transform: scale(1.3); filter: drop-shadow(0 0 18px rgba(232,117,138,1)); }
+    65%  { transform: scale(0.92); }
+    100% { transform: scale(1);   filter: drop-shadow(0 4px 8px rgba(0,0,0,0.75)); }
 }
+.piece-landing img { animation: pieceLand 0.38s cubic-bezier(.34,1.56,.64,1) forwards; }
 
-.hint {
-    background-color: rgba(247, 171, 8, 0.5) !important;
-    box-shadow: inset 0 0 0 4px rgba(247, 171, 8, 0.8);
+/* ================= RESPONSIVE ================= */
+@media (max-width: 700px) {
+    .game-layout { flex-direction: column; }
+    .control-panel { max-width: 100%; flex-direction: row; flex-wrap: wrap; gap: 10px; }
+    .control-panel h2 { width: 100%; }
+    .status-box { flex: 1; min-width: 120px; }
+    .actions { flex-direction: row; flex: 2; }
+    .panel-deco { display: none; }
 }
