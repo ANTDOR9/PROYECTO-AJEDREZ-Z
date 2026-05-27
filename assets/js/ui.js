@@ -4,101 +4,175 @@
 
 const UI = {
     contenedorTablero: null,
-    casillaSeleccionada: null, // Para guardar {fila, col} cuando el usuario hace clic
+    casillaSeleccionada: null,
+    movimientosValidos: [],    // Lista de {fila, col} resaltados como pistas
+    botPensando: false,        // Bloquea clics mientras el bot calcula
 
-    // 1. Inicializa la interfaz capturando el contenedor del HTML
     inicializar() {
         this.contenedorTablero = document.getElementById("chess-board");
         this.casillaSeleccionada = null;
+        this.movimientosValidos = [];
+        this.botPensando = false;
+        Logic.inicializarTablero();
         this.dibujarTablero();
+        this.actualizarTurno();
+
+        // Si el jugador eligió negras, el bot mueve primero
+        if (ConfigJuego.modo === 'bot' && ConfigJuego.colorJugador === 'black') {
+            this.ejecutarTurnoBotConDelay();
+        }
     },
 
-    // 2. Traduce la matriz lógica de Logic.tablero a elementos HTML reales
     dibujarTablero() {
-        // Limpiamos el tablero visual por si había una partida anterior
         this.contenedorTablero.innerHTML = "";
 
-        // Recorremos las 8 filas y 8 columnas
-        for (let fila = 0; fila < 8; fila++) {
-            for (let col = 0; col < 8; col++) {
-                
-                // Creamos el elemento div para la casilla
+        // Orientación del tablero según el color del jugador
+        const invertido = ConfigJuego.colorJugador === 'black';
+
+        for (let filaLogica = 0; filaLogica < 8; filaLogica++) {
+            for (let colLogica = 0; colLogica < 8; colLogica++) {
+                // Si el tablero está invertido, la fila visual va al revés
+                const filaVisual = invertido ? 7 - filaLogica : filaLogica;
+                const colVisual  = invertido ? 7 - colLogica  : colLogica;
+
                 const casillaHTML = document.createElement("div");
                 casillaHTML.classList.add("square");
 
-                // Determinamos el color de la casilla (Fórmula matemática para intercalar)
-                if ((fila + col) % 2 === 0) {
+                if ((filaVisual + colVisual) % 2 === 0) {
                     casillaHTML.classList.add("light");
                 } else {
                     casillaHTML.classList.add("dark");
                 }
 
-                // Guardamos las coordenadas en atributos del HTML para saber dónde hace clic el usuario
-                casillaHTML.dataset.fila = fila;
-                casillaHTML.dataset.col = col;
+                // Guardamos las coordenadas LÓGICAS (no visuales) para la lógica del juego
+                casillaHTML.dataset.fila = filaVisual;
+                casillaHTML.dataset.col = colVisual;
 
-                // Revisamos si hay una pieza en esta posición dentro de la lógica
-                const pieza = Logic.tablero[fila][col];
+                const pieza = Logic.tablero[filaVisual][colVisual];
                 if (pieza) {
-                    // Obtenemos el símbolo Unicode correspondiente (ej: '♙' o '♜')
                     const simbolo = Logic.piezasUnicode[pieza.color][pieza.tipo];
                     casillaHTML.textContent = simbolo;
-                    // Le añadimos una clase CSS según el color por si queremos darles estilos diferentes
                     casillaHTML.classList.add(pieza.color === "white" ? "pieza-blanca" : "pieza-negra");
                 }
 
-                // Asignamos el evento de clic a cada casilla
-                casillaHTML.addEventListener("click", (e) => this.manejarClicCasilla(e));
+                // Resaltar casilla seleccionada
+                if (this.casillaSeleccionada &&
+                    this.casillaSeleccionada.fila === filaVisual &&
+                    this.casillaSeleccionada.col === colVisual) {
+                    casillaHTML.classList.add("selected");
+                }
 
-                // Metemos la casilla dentro del tablero en el HTML
+                // Resaltar movimientos válidos como pistas
+                const esPista = this.movimientosValidos.some(m => m.fila === filaVisual && m.col === colVisual);
+                if (esPista) {
+                    casillaHTML.classList.add("hint");
+                }
+
+                casillaHTML.addEventListener("click", (e) => this.manejarClicCasilla(e));
                 this.contenedorTablero.appendChild(casillaHTML);
             }
         }
     },
 
-    // 3. Manejador de clics (Fase inicial: Permite seleccionar y mover libremente)
     manejarClicCasilla(evento) {
-        // Obtenemos las coordenadas de la casilla pulsada
+        // Bloquear clics si el bot está pensando
+        if (this.botPensando) return;
+
         const fila = parseInt(evento.currentTarget.dataset.fila);
-        const col = parseInt(evento.currentTarget.dataset.col);
+        const col  = parseInt(evento.currentTarget.dataset.col);
         const pieza = Logic.tablero[fila][col];
 
-        // CASO 1: No hay ninguna pieza seleccionada previamente
+        // CASO 1: Nada seleccionado → intentar seleccionar una pieza del jugador
         if (this.casillaSeleccionada === null) {
-            if (pieza) {
-                // Seleccionamos la pieza
+            // Solo puede seleccionar piezas de su color
+            if (pieza && pieza.color === Logic.turnoActual &&
+                (ConfigJuego.modo === 'pvp' || pieza.color === ConfigJuego.colorJugador)) {
+
                 this.casillaSeleccionada = { fila, col };
-                this.dibujarTablero(); // Redibujamos para limpiar selecciones viejas
-                this.resaltarCasilla(fila, col); // Resaltamos la casilla actual
-            }
-        } 
-        // CASO 2: Ya había una pieza seleccionada e intentamos moverla a la nueva casilla
-        else {
-            const origen = this.casillaSeleccionada;
-
-            // Si hace clic en la misma casilla, la deseleccionamos
-            if (origen.fila === fila && origen.col === col) {
-                this.casillaSeleccionada = null;
+                this.movimientosValidos = Logic.obtenerMovimientosPosibles(fila, col);
                 this.dibujarTablero();
-                return;
             }
+            return;
+        }
 
-            // Ejecutamos el movimiento en el cerebro lógico del juego
-            Logic.ejecutarMovimiento(origen.fila, origen.col, fila, col);
+        // CASO 2: Hay pieza seleccionada
+        const origen = this.casillaSeleccionada;
 
-            // Reseteamos la selección y actualizamos la pantalla
+        // Sub-caso: clic en la misma casilla → deseleccionar
+        if (origen.fila === fila && origen.col === col) {
             this.casillaSeleccionada = null;
+            this.movimientosValidos = [];
             this.dibujarTablero();
+            return;
+        }
 
-            // Actualizamos visualmente el turno en el panel lateral llamando a app.js indirectamente
-            document.getElementById("current-turn").textContent = 
-                Logic.turnoActual === "white" ? "Blancas" : "Negras";
+        // Sub-caso: clic en otra pieza del mismo color → cambiar selección
+        if (pieza && pieza.color === Logic.turnoActual &&
+            (ConfigJuego.modo === 'pvp' || pieza.color === ConfigJuego.colorJugador)) {
+            this.casillaSeleccionada = { fila, col };
+            this.movimientosValidos = Logic.obtenerMovimientosPosibles(fila, col);
+            this.dibujarTablero();
+            return;
+        }
+
+        // Sub-caso: clic en un movimiento válido → ejecutar
+        const esMovimientoValido = this.movimientosValidos.some(m => m.fila === fila && m.col === col);
+        if (!esMovimientoValido) {
+            // Clic inválido → deseleccionar
+            this.casillaSeleccionada = null;
+            this.movimientosValidos = [];
+            this.dibujarTablero();
+            return;
+        }
+
+        // Ejecutar movimiento del jugador
+        Logic.ejecutarMovimiento(origen.fila, origen.col, fila, col);
+        this.casillaSeleccionada = null;
+        this.movimientosValidos = [];
+        this.dibujarTablero();
+        this.actualizarTurno();
+
+        // Si es modo bot, activar el turno del bot
+        if (ConfigJuego.modo === 'bot') {
+            this.ejecutarTurnoBotConDelay();
         }
     },
 
-    // Función auxiliar para añadir la clase amarilla de selección
-    resaltarCasilla(fila, col) {
-        const casilla = this.contenedorTablero.querySelector(`[data-fila='${fila}'][data-col='${col}']`);
-        if (casilla) casilla.classList.add("selected");
+    ejecutarTurnoBotConDelay() {
+        this.botPensando = true;
+        this.mostrarIndicadorBot(true);
+
+        // Pequeño delay para que se vea el movimiento del jugador antes de que el bot responda
+        setTimeout(() => {
+            const movBot = Bot.elegirMovimiento();
+            if (movBot) {
+                Logic.ejecutarMovimiento(movBot.desdeFila, movBot.desdeCol, movBot.hastaFila, movBot.hastaCol);
+                this.dibujarTablero();
+                this.actualizarTurno();
+            }
+            this.botPensando = false;
+            this.mostrarIndicadorBot(false);
+        }, 400);
+    },
+
+    mostrarIndicadorBot(pensando) {
+        const statusBox = document.querySelector(".status-box");
+        if (!statusBox) return;
+        if (pensando) {
+            statusBox.style.borderLeft = "3px solid #ff4757";
+        } else {
+            statusBox.style.borderLeft = "";
+        }
+    },
+
+    actualizarTurno() {
+        const spanTurno = document.getElementById("current-turn");
+        if (!spanTurno) return;
+
+        if (ConfigJuego.modo === 'bot' && Logic.turnoActual !== ConfigJuego.colorJugador) {
+            spanTurno.textContent = "Bot pensando...";
+        } else {
+            spanTurno.textContent = Logic.turnoActual === "white" ? "Blancas" : "Negras";
+        }
     }
 };
