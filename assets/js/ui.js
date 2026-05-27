@@ -287,7 +287,7 @@ const UI = {
             overlay.remove();
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('menu-screen').classList.remove('hidden');
-            if (typeof Audio !== 'undefined') Audio.playMenu();
+            if (typeof AudioManager !== 'undefined') AudioManager.playMenu();
         };
 
         overlay.append(emoji, titulo, sub, btnNueva);

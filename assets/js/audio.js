@@ -1,22 +1,14 @@
 // ==========================================
-// MÓDULO AUDIO
-// ==========================================
-// Para agregar música, tu novia sube los archivos:
-//   assets/audio/menu.mp3   ← música del menú
-//   assets/audio/game.mp3   ← música de la partida
-//
-// Características para la ilustradora / compositora:
-//   MENÚ  → guzheng + flauta dizi + campanitas, tempo lento, misterioso, loop limpio
-//   JUEGO → erhu + percusión taiko suave + bajo profundo, más tenso, loop con pulso
+// MÓDULO AUDIO — sin colisión de nombres
 // ==========================================
 
-const Audio = {
+const AudioManager = {
     MENU_SRC: 'assets/audio/menu.mp3',
     GAME_SRC: 'assets/audio/game.mp3',
     VOLUME:   0.4,
     FADE_MS:  1200,
 
-    _el: null,       // elemento <audio> activo
+    _el: null,
     _muted: false,
     _timer: null,
     _currentSrc: '',
@@ -36,15 +28,22 @@ const Audio = {
 
         const prev = this._el;
         const siguiente = () => {
-            const a = new Audio(src);
+            // Usar window.Audio para no colisionar con este módulo
+            const a = new window.Audio(src);
             a.loop   = true;
             a.volume = 0;
             this._el = a;
-            a.play().catch(() => {
-                // Autoplay bloqueado — esperar primer clic del usuario
-                const resume = () => { a.play(); document.removeEventListener('click', resume); };
-                document.addEventListener('click', resume, { once: true });
-            });
+            const promise = a.play();
+            if (promise !== undefined) {
+                promise.catch(() => {
+                    // Autoplay bloqueado — arrancar en el primer clic
+                    const resume = () => {
+                        a.play().catch(() => {});
+                        document.removeEventListener('click', resume);
+                    };
+                    document.addEventListener('click', resume, { once: true });
+                });
+            }
             this._fadeIn(a);
         };
 
