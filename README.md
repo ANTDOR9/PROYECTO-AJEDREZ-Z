@@ -1,4 +1,4 @@
 # PROYECTO-AJEDREZ-Z
 
 jasjja se queda en blanco cuando la partida acaba
-lo se :c 
+<br> lo se :c </br>
