@@ -7,25 +7,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnAbandonar  = document.getElementById('btn-restart');
     const btnDeshacer   = document.getElementById('btn-undo');
     const btnMute       = document.getElementById('btn-mute');
-    const pantallaMenu  = document.getElementById('menu-screen');
-    const pantallaJuego = document.getElementById('game-screen');
+    const menuScreen    = document.getElementById('menu-screen');
+    const gameScreen    = document.getElementById('game-screen');
 
-    // El navegador bloquea autoplay hasta la primera interacción del usuario.
-    // Arrancamos la música del menú en el primer clic sobre cualquier cosa.
+    // Música: arranca en el primer clic (requisito del navegador)
     let musicaIniciada = false;
-    const iniciarMusica = () => {
-        if (!musicaIniciada) {
-            musicaIniciada = true;
-            AudioManager.playMenu();
-        }
-    };
-    document.addEventListener('click', iniciarMusica, { once: true });
+    document.addEventListener('click', () => {
+        if (!musicaIniciada) { musicaIniciada = true; AudioManager.playMenu(); }
+    }, { once: true });
 
-    // ── INICIAR PARTIDA ───────────────────────────────────────
+    // ── INICIAR ───────────────────────────────────────────────
     btnIniciar.addEventListener('click', () => {
         ConfigJuego.partidaActiva = true;
-        pantallaMenu.classList.add('hidden');
-        pantallaJuego.classList.remove('hidden');
+        // Ocultar menú, mostrar juego
+        menuScreen.style.opacity = '0';
+        menuScreen.style.transition = 'opacity 0.4s ease';
+        setTimeout(() => { menuScreen.style.display = 'none'; }, 400);
+        gameScreen.classList.remove('hidden');
+        gameScreen.style.opacity = '0';
+        gameScreen.style.transition = 'opacity 0.4s ease';
+        setTimeout(() => { gameScreen.style.opacity = '1'; }, 50);
         UI.inicializar();
         AudioManager.playGame();
     });
@@ -34,8 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
     btnAbandonar.addEventListener('click', () => {
         if (!confirm('¿Seguro que deseas abandonar la partida?')) return;
         ConfigJuego.partidaActiva = false;
-        pantallaJuego.classList.add('hidden');
-        pantallaMenu.classList.remove('hidden');
+        gameScreen.classList.add('hidden');
+        menuScreen.style.display = '';
+        menuScreen.style.opacity = '0';
+        setTimeout(() => { menuScreen.style.opacity = '1'; }, 50);
         document.getElementById('chess-board').innerHTML = '';
         AudioManager.playMenu();
     });
@@ -55,7 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnMute) {
         btnMute.addEventListener('click', () => {
             const muteado = AudioManager.toggleMute();
-            btnMute.textContent = muteado ? '🔇 Sonido' : '🔊 Sonido';
+            const span = btnMute.querySelector('span');
+            if (span) span.textContent = muteado ? '🔇 Sonido' : '🔊 Sonido';
         });
     }
 });

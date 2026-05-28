@@ -320,3 +320,229 @@ select:focus { border-color: var(--peach); box-shadow: 0 0 0 3px rgba(232,117,13
     .panel-deco { display: none; }
     .board-top-bar { width: min(90vw, 560px); }
 }
+
+
+/* ════════════════════════════════════════
+   MENÚ — EFECTO VELA
+════════════════════════════════════════ */
+
+/* Ocultar cursor nativo en el menú */
+#menu-screen { cursor: none; }
+
+#menu-screen {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    z-index: 100;
+}
+
+/* Fondo: dragones y nubes tinta china */
+#menu-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url('../../assets/images/menu/fondo_menu.png');
+    background-size: cover;
+    background-position: center;
+    /* Tinte oscuro para que encaje con la paleta */
+    filter: brightness(0.6) sepia(0.3) hue-rotate(300deg);
+    z-index: 0;
+}
+
+/* Overlay oscuro con máscara circular (la vela) */
+#candle-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: radial-gradient(
+        circle var(--r, 120px) at var(--x, 50%) var(--y, 50%),
+        transparent                    0%,
+        rgba(13, 6, 8, 0.15)          40%,
+        rgba(13, 6, 8, 0.75)          70%,
+        rgba(13, 6, 8, 0.97)         100%
+    );
+    /* Luz cálida sutil en el círculo iluminado */
+    --x: 50%;
+    --y: 50%;
+    --r: 120px;
+    pointer-events: all;
+}
+
+/* Segundo overlay: tinte ámbar/naranja en la zona iluminada */
+#candle-overlay::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        circle calc(var(--r, 120px) * 0.7) at var(--x, 50%) var(--y, 50%),
+        rgba(249, 170, 71, 0.07)  0%,
+        transparent               100%
+    );
+    pointer-events: none;
+}
+
+/* Cursor vela personalizado */
+#custom-cursor {
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 10;
+    will-change: transform;
+    /* Animación de llama */
+    animation: candleWiggle 1.8s ease-in-out infinite;
+}
+@keyframes candleWiggle {
+    0%,100% { filter: drop-shadow(0 0 8px rgba(249,170,71,0.9)) drop-shadow(0 0 20px rgba(249,100,30,0.5)); }
+    50%      { filter: drop-shadow(0 0 14px rgba(249,170,71,1)) drop-shadow(0 0 30px rgba(249,100,30,0.7)); }
+}
+
+/* Halo de luz alrededor del cursor */
+#cursor-glow {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -60%);
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(249,170,71,0.25) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* Pétalos: encima del overlay, debajo del contenido */
+#petals-container {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Contenido del menú — siempre visible encima del overlay */
+#menu-content {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    padding: 40px 20px;
+    pointer-events: none; /* el overlay captura eventos de mouse para el cursor */
+}
+/* Reenable pointer events solo en los elementos interactivos */
+#menu-content select,
+#menu-content button,
+#menu-content .menu-buttons,
+#menu-content .menu-form { pointer-events: all; }
+
+/* Logo */
+#menu-logo img {
+    max-width: min(460px, 85vw);
+    height: auto;
+    filter: drop-shadow(0 0 20px rgba(232,117,138,0.5))
+            drop-shadow(0 0 40px rgba(249,170,71,0.3));
+    animation: logoFloat 4s ease-in-out infinite;
+}
+#menu-logo h1 {
+    font-size: clamp(26px, 5vw, 42px);
+    color: var(--peach-light);
+    letter-spacing: 4px;
+    text-shadow:
+        0 0 20px rgba(232,117,138,0.7),
+        0 0 50px rgba(249,170,71,0.3);
+    animation: logoFloat 4s ease-in-out infinite;
+}
+@keyframes logoFloat {
+    0%,100% { transform: translateY(0);    }
+    50%      { transform: translateY(-6px); }
+}
+
+/* Formulario del menú */
+.menu-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: min(360px, 85vw);
+}
+.menu-form .form-group { margin-bottom: 0; }
+.menu-form label {
+    font-size: 10px; letter-spacing: 2px;
+    color: var(--gold); text-transform: uppercase;
+    margin-bottom: 6px;
+    /* Sombra de texto para legibilidad sobre el fondo oscuro */
+    text-shadow: 0 0 10px rgba(201,149,90,0.8);
+}
+.menu-form select {
+    background: rgba(13,6,8,0.75);
+    border: 1px solid rgba(232,117,138,0.3);
+    backdrop-filter: blur(4px);
+}
+
+/* Botones con GIF de fondo */
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+}
+
+.btn-gif {
+    position: relative;
+    width: 220px;
+    height: 62px;
+    border: none;
+    border-radius: 10px;
+    cursor: none;
+    overflow: hidden;
+    background: rgba(20, 8, 15, 0.85);
+    border: 1px solid rgba(232,117,138,0.35);
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+}
+.btn-gif:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow:
+        0 8px 30px rgba(232,117,138,0.4),
+        0 0 20px rgba(249,170,71,0.15);
+    border-color: rgba(232,117,138,0.7);
+}
+.btn-gif:active { transform: scale(0.98); }
+
+/* GIF de fondo del botón */
+.btn-gif-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: 0.55;
+    mix-blend-mode: screen;
+    pointer-events: none;
+}
+
+/* Texto del botón encima del GIF */
+.btn-gif span {
+    position: relative;
+    z-index: 1;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--peach-light);
+    text-shadow:
+        0 0 10px rgba(232,117,138,0.8),
+        0 1px 3px rgba(0,0,0,0.9);
+    pointer-events: none;
+}
+
+.btn-gif--sm {
+    width: 160px;
+    height: 46px;
+}
+.btn-gif--sm span { font-size: 11px; }
+
+/* ── Responsive menú ── */
+@media (max-width: 500px) {
+    #menu-content { gap: 20px; }
+    .btn-gif { width: 190px; height: 56px; }
+}
